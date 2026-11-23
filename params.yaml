@@ -3,3 +3,35 @@ data:
   later_path: data/raw/later.csv
   holdout_path: data/raw/holdout_features.csv
   target: fare_rs
+
+clean:
+  leak_column: fare_paid_receipt_rs
+  unit_column: distance_km
+  unit_zone: Market
+  unit_factor: 1000
+  unit_fix_above: 100        # only rows above this are in metres
+  target_typo_above: 1000    # fares above this were typed 10x too big
+  target_typo_factor: 10
+
+features:
+  numeric: [distance_km, wait_min, passengers, hour, luggage_bags, fuel_price_rs]
+  categorical: [booking, zone]
+
+train:
+  experiment_name: mp134-autofare
+  registered_model_name: mp134-fare-model
+  test_size: 0.2
+  random_state: 42
+  model_path: models/model.joblib
+  candidates:
+    - name: linear
+      model: linear
+    - name: random_forest
+      model: random_forest
+      n_estimators: 200
+      max_depth: 8
+    - name: gradient_boosting
+      model: gradient_boosting
+      n_estimators: 300
+      learning_rate: 0.05
+      max_depth: 3
